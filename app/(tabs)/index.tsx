@@ -8,8 +8,7 @@ export default function TabOneScreen() {
   const router =  useRouter();
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab One On One </Text>
-      <Text style={styles.title}>This is a test tab</Text>
+      <Text style={styles.title}>Welcome to the Home Screen</Text>
       <Button  
           title="Go to Profile"
           onPress={()=>router.push("/two")}
