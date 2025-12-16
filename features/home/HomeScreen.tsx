@@ -9,30 +9,31 @@ import { categories } from '@/constants/Categories';
 import { tasks } from '@/constants/Tasks';
 import { Text, View as ThemedView  } from '@/components/Themed';
 import { homeStyles as styles } from './styles';
+import TaskItem from './TaskItem';
 
 
 
 export default function HomeScreenTab() {
   const router =  useRouter();
   const [query, setQuery] = useState('');
-  const renderTask = useCallback(({ item }) => (
-  <View style={styles.taskCard}>
-    <Image source={item.image} style={styles.image} />
-    <View style={styles.cardContent}>
-      <Text style={styles.taskName}>{item.name}</Text>
-      <Text style={styles.taskDue}>Due: {item.dueDate}</Text>
-      <View style={styles.progressBarBackground}>
-        <View
-          style={[
-            styles.progressBarFill,
-            { width: `${item.progress}%` },
-          ]}
-        />
-      </View>
-      <Text style={styles.progressText}>{item.progress}% completed</Text>
-    </View>
-  </View>
-), []);
+//   const renderTask = useCallback(({ item }) => (
+//   <View style={styles.taskCard}>
+//     <Image source={item.image} style={styles.image} />
+//     <View style={styles.cardContent}>
+//       <Text style={styles.taskName}>{item.name}</Text>
+//       <Text style={styles.taskDue}>Due: {item.dueDate}</Text>
+//       <View style={styles.progressBarBackground}>
+//         <View
+//           style={[
+//             styles.progressBarFill,
+//             { width: `${item.progress}%` },
+//           ]}
+//         />
+//       </View>
+//       <Text style={styles.progressText}>{item.progress}% completed</Text>
+//     </View>
+//   </View>
+// ), []);
   return (
     <SafeAreaView style={{ flex: 1,}}>
     
@@ -94,16 +95,16 @@ export default function HomeScreenTab() {
         {/* Due Tasks */}
         <View style={[styles.taskContainer, {flex:1,}]}>
           <Text style={styles.taskHeader}>
-            Ongoing Task
+            Ongoing Tasks
           </Text>
           <FlatList
             data={tasks}
             keyExtractor={(item)=>item.id}  
-            contentContainerStyle={{ paddingBottom: 16 }}
+            contentContainerStyle={{ paddingBottom: 5 }}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
             nestedScrollEnabled={true} 
-            renderItem={renderTask }
+            renderItem={({ item }) => <TaskItem item={item} />}
           /> 
           </View>
       </ThemedView>

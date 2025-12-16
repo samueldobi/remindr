@@ -1,4 +1,4 @@
-import type { Category } from "@/types/Category";
+import type { Category } from "@/features/home/types";
 export const categories:Category[] = [
   {
     id: '1',
