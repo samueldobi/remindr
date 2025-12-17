@@ -13,7 +13,7 @@ export const homeStyles = StyleSheet.create({
     padding:20,
   },
   headerTitle:{
-    fontSize:25,
+    fontSize:20,
     fontWeight:'bold',
     padding:5,
   },
@@ -70,5 +70,42 @@ categoriesBox: {
     fontWeight: '700',
     marginBottom: 12,  
   },
+  backdrop: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  drawer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    width: '75%',
+    backgroundColor: '#607B8F',
+    elevation: 5,
+    shadowColor: '#000', 
+    shadowOffset: { width: 2, height: 0 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    paddingTop: 0, 
+  },
+  drawerItem: {
+  paddingVertical: 12,
+  paddingHorizontal: 16,
+  marginVertical: 4,
+  borderRadius: 8,
+  flexDirection:'row',
+},
+drawerItemText: {
+  color: 'white',
+  fontSize: 20,
+  fontWeight: '500',
+  marginTop:4,
+},
+
+
  
 });
