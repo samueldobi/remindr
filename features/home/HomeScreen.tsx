@@ -1,12 +1,12 @@
 import { StyleSheet, Button , View, Image, 
   TouchableWithoutFeedback, Keyboard,
-   Pressable,ScrollView, FlatList, TouchableOpacity} from 'react-native';
+   Pressable,ScrollView, FlatList,SectionList , TouchableOpacity} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Searchbar } from 'react-native-paper';
 import {  useState } from 'react';
 import { categories } from '@/constants/Categories';
-import { tasks } from '@/constants/Tasks';
+import { tasks , taskSections} from '@/constants/Tasks';
 import { Text, View as ThemedView  } from '@/components/Themed';
 import { homeStyles as styles } from './styles';
 import TaskItem from './TaskItem';
@@ -79,8 +79,8 @@ export default function HomeScreenTab() {
 
       {/* Due Tasks */}
       <View style={[styles.taskContainer, { flex: 1 }]}>
-        <Text style={styles.headerTitle}>Ongoing Tasks</Text>
-        <FlatList
+        <Text style={[styles.headerTitle, {textAlign:'center', marginTop:7,}]}>Ongoing Reminders</Text>
+        {/* <FlatList
           data={tasks}
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ paddingBottom: 5 }}
@@ -88,6 +88,19 @@ export default function HomeScreenTab() {
           keyboardShouldPersistTaps="handled"
           nestedScrollEnabled={true}
           renderItem={({ item }) => <TaskItem item={item} />}
+        /> */}
+
+        <SectionList
+        sections={taskSections}
+        keyExtractor={(item) => item.id}
+        showsVerticalScrollIndicator={false}
+        renderSectionHeader={({section})=>(
+            <Text style={[styles.headerTitle, {backgroundColor:'#fff'}]}>
+                {section.title.charAt(0).toUpperCase() + section.title.slice(1).toLowerCase()}
+                </Text>
+        )}
+        renderItem={({item})=> <TaskItem item={item}/>}
+
         />
       </View>
     </ThemedView>
