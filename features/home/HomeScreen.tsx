@@ -1,6 +1,7 @@
 import { StyleSheet, Button , View, Image, 
   TouchableWithoutFeedback, Keyboard,
    Pressable,ScrollView, FlatList,SectionList , TouchableOpacity} from 'react-native';
+import DailyOverview from './components/DailyOverview';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Searchbar } from 'react-native-paper';
@@ -22,7 +23,7 @@ export default function HomeScreenTab() {
 
   return (
     <>
-  <SafeAreaView style={{ flex: 1 }}>
+  <SafeAreaView style={{ flex: 1, marginBottom: 0 }}>
     <ThemedView style={styles.container}>
       {/*  Header View */}
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -56,6 +57,8 @@ export default function HomeScreenTab() {
         </View>
       </TouchableWithoutFeedback>
 
+      {/* Daily Overview */}
+      <DailyOverview/>
       {/* Categories View */}
       <View style={styles.categoriesBox}>
         <Text style={styles.headerTitle}> Categories </Text>
@@ -76,6 +79,7 @@ export default function HomeScreenTab() {
           ))}
         </ScrollView>
       </View>
+
 
       {/* Due Tasks */}
       <View style={[styles.taskContainer, { flex: 1 }]}>
