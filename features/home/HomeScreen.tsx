@@ -27,12 +27,12 @@ export default function HomeScreenTab() {
   <SafeAreaView style={{ flex: 1, marginBottom: 0 }}>
     <ThemedView style={styles.container}>
       {/*  Header View */}
-      {/* <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <View>
           <View style={styles.headerView}>
             <View>
               <Text style={styles.headerTitle}>Welcome Julia</Text>
-              <Text style={styles.headerSubtitle}>8 pending bills</Text>
+              {/* <Text style={styles.headerSubtitle}>8 pending bills</Text> */}
             </View>
             <View>
               <TouchableOpacity onPress={() => setDrawerOpen(true)}>
@@ -46,7 +46,7 @@ export default function HomeScreenTab() {
           </View>
 
           {/* Searchbar View */}
-         {/* <View>
+          {/* <View>
             <Searchbar
               placeholder="Search reminder"
               onChangeText={setQuery}
@@ -54,9 +54,9 @@ export default function HomeScreenTab() {
               style={styles.searchBar}
               onBlur={() => Keyboard.dismiss()}
             />
-          </View>
+          </View> */}
         </View>
-      </TouchableWithoutFeedback> */}
+      </TouchableWithoutFeedback>
 
       {/* Daily Overview */}
       <DailyOverview/>
@@ -96,7 +96,7 @@ export default function HomeScreenTab() {
           renderItem={({ item }) => <TaskItem item={item} />}
         /> */}
 
-        <SectionList
+        {/* <SectionList
         sections={taskSections}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
@@ -107,7 +107,7 @@ export default function HomeScreenTab() {
         )}
         renderItem={({item})=> <TaskItem item={item}/>}
 
-        />
+        /> */}
       </View>
     </ThemedView>
   </SafeAreaView>
