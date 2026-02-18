@@ -2,6 +2,7 @@ import { StyleSheet, Button , View, Image,
   TouchableWithoutFeedback, Keyboard,
    Pressable,ScrollView, FlatList,SectionList , TouchableOpacity} from 'react-native';
 import DailyOverview from './components/DailyOverview';
+import UpcomingReminders from './components/UpcomingReminders';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Searchbar } from 'react-native-paper';
@@ -26,7 +27,7 @@ export default function HomeScreenTab() {
   <SafeAreaView style={{ flex: 1, marginBottom: 0 }}>
     <ThemedView style={styles.container}>
       {/*  Header View */}
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      {/* <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <View>
           <View style={styles.headerView}>
             <View>
@@ -45,7 +46,7 @@ export default function HomeScreenTab() {
           </View>
 
           {/* Searchbar View */}
-          <View>
+         {/* <View>
             <Searchbar
               placeholder="Search reminder"
               onChangeText={setQuery}
@@ -55,12 +56,13 @@ export default function HomeScreenTab() {
             />
           </View>
         </View>
-      </TouchableWithoutFeedback>
+      </TouchableWithoutFeedback> */}
 
       {/* Daily Overview */}
       <DailyOverview/>
+      <UpcomingReminders/>
       {/* Categories View */}
-      <View style={styles.categoriesBox}>
+      {/* <View style={styles.categoriesBox}>
         <Text style={styles.headerTitle}> Categories </Text>
         <ScrollView
           horizontal
@@ -78,7 +80,7 @@ export default function HomeScreenTab() {
             </Pressable>
           ))}
         </ScrollView>
-      </View>
+      </View> */}
 
 
       {/* Due Tasks */}
