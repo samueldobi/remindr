@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     justifyContent:"center",
     paddingVertical: 8,
     paddingHorizontal: 18,
-    borderRadius: 15,
+    borderRadius: 30,
   },
 
   activeFilterButton: {
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   },
 
   filterText: {
-    fontSize: 14,
+    fontSize: 18,
     fontWeight: "600",
     color: strong,
   },
