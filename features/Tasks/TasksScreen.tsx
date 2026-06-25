@@ -6,13 +6,13 @@ import Header from './components/Header';
 import SegmentedControl from './components/SegmentedControl';
 import ActiveTasks from './components/ActiveTasks';
 import ShoppingList from './components/ShoppingList';
-import JointSavings from './components/JointSavings';
+import Bills from './components/Bills';
 import FAB from './components/FAB';
 
 const CONTENT = {
   Tasks: <ActiveTasks />,
   Shopping: <ShoppingList />,
-  Savings: <JointSavings />,
+  Bills: <Bills />,
 };
 
 export default function TaskListScreen() {
@@ -20,7 +20,6 @@ export default function TaskListScreen() {
 
   const handleFABPress = () => {
     console.log('FAB pressed on tab:', activeTab);
-    // Add new task / item / goal depending on active tab
   };
 
   return (

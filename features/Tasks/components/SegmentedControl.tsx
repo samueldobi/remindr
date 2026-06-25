@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-const TABS = ['Tasks', 'Shopping', 'Savings'];
+const TABS = ['Tasks', 'Shopping', 'Bills'];
 
 export default function SegmentedControl({ activeTab, onTabChange }) {
   return (

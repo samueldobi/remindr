@@ -5,7 +5,7 @@ export const homeStyles = StyleSheet.create({
     justifyContent:'flex-start',
     // marginTop:60,
     padding:10,
-    backgroundColor:'BBDCE5',
+    backgroundColor:'#F8F7F5',
   },
   headerView:{
     flexDirection:'row',

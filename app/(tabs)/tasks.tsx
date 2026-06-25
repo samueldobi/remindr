@@ -1,7 +1,5 @@
-import TaskScreen from "@/features/Tasks/TasksScreen"
+import TaskScreen from '@/features/Tasks/TasksScreen';
 
-export default function Tasks(){
-    return(
-        <TaskScreen/>
-    )
+export default function Tasks() {
+  return <TaskScreen />;
 }

@@ -1,17 +1,13 @@
 import { StyleSheet, Button , View, Image, 
   TouchableWithoutFeedback, Keyboard,
-   Pressable,ScrollView, FlatList,SectionList , TouchableOpacity} from 'react-native';
+  TouchableOpacity} from 'react-native';
 import DailyOverview from './components/DailyOverview';
 import UpcomingReminders from './components/UpcomingReminders';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Searchbar } from 'react-native-paper';
 import {  useState } from 'react';
-import { categories } from '@/constants/Categories';
-import { tasks , taskSections} from '@/constants/Tasks';
-import { Text, View as ThemedView  } from '@/components/Themed';
+import { Text } from '@/components/Themed';
 import { homeStyles as styles } from './styles';
-import TaskItem from './TaskItem';
 import { Drawer } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -24,8 +20,8 @@ export default function HomeScreenTab() {
 
   return (
     <>
-  <SafeAreaView style={{ flex: 1, marginBottom: 0 }}>
-    <ThemedView style={styles.container}>
+  <SafeAreaView style={{ flex: 1, marginBottom: 0, backgroundColor: '#F8F7F5' }}>
+    <View style={styles.container}>
       {/*  Header View */}
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <View>
@@ -45,71 +41,21 @@ export default function HomeScreenTab() {
             </View>
           </View>
 
-          {/* Searchbar View */}
-          {/* <View>
-            <Searchbar
-              placeholder="Search reminder"
-              onChangeText={setQuery}
-              value={query}
-              style={styles.searchBar}
-              onBlur={() => Keyboard.dismiss()}
-            />
-          </View> */}
+      
         </View>
       </TouchableWithoutFeedback>
 
       {/* Daily Overview */}
       <DailyOverview/>
       <UpcomingReminders/>
-      {/* Categories View */}
-      {/* <View style={styles.categoriesBox}>
-        <Text style={styles.headerTitle}> Categories </Text>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContent}
-          nestedScrollEnabled={true}
-        >
-          {categories.map((category) => (
-            <Pressable style={styles.card} key={category.id}>
-              <Text style={styles.cardText}>{category.name}</Text>
-              <Text style={styles.subtitle}>
-                {category.taskCount} tasks
-              </Text>
-              <Image source={category.image} style={styles.categoryImage} />
-            </Pressable>
-          ))}
-        </ScrollView>
-      </View> */}
-
+      
 
       {/* Due Tasks */}
       <View style={[styles.taskContainer, { flex: 1 }]}>
         <Text style={[styles.headerTitle, {textAlign:'center', marginTop:7,}]}>Ongoing Reminders</Text>
-        {/* <FlatList
-          data={tasks}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={{ paddingBottom: 5 }}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-          nestedScrollEnabled={true}
-          renderItem={({ item }) => <TaskItem item={item} />}
-        /> */}
-
-        {/* <SectionList
-        sections={taskSections}
-        keyExtractor={(item) => item.id}
-        showsVerticalScrollIndicator={false}
-        renderSectionHeader={({section})=>(
-            <Text style={[styles.headerTitle, {backgroundColor:'#fff'}]}>
-                {section.title.charAt(0).toUpperCase() + section.title.slice(1).toLowerCase()}
-                </Text>
-        )}
-        renderItem={({item})=> <TaskItem item={item}/>}
-
-        /> */}
+       
       </View>
-    </ThemedView>
+    </View>
   </SafeAreaView>
 
   {/* Drawer */}
