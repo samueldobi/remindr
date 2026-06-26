@@ -1,9 +1,9 @@
 export type Bill = {
   id: string;
   name: string;
-  amount: string;
+  amount: number;
   dueDate: string;
+  dueTime: string;
   status: 'paid' | 'unpaid';
   category: string;
-  icon: string;
 };

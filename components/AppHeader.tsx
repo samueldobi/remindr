@@ -1,21 +1,29 @@
-import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 
-export default function Header({ onMenuPress }) {
+type AppHeaderProps = {
+  title: string;
+  onMenuPress: () => void;
+  showAvatar?: boolean;
+};
+
+export default function AppHeader({ title, onMenuPress, showAvatar = true }: AppHeaderProps) {
   return (
     <View style={styles.header}>
       <TouchableOpacity style={styles.menuButton} onPress={onMenuPress} activeOpacity={0.7}>
         <Text style={styles.menuIcon}>☰</Text>
       </TouchableOpacity>
 
-      <Text style={styles.title}>Household Board</Text>
+      <Text style={styles.title}>{title}</Text>
 
-      <TouchableOpacity style={styles.avatarWrapper} activeOpacity={0.8}>
-        <Image
-          source={{ uri: 'https://i.pravatar.cc/150?img=12' }}
-          style={styles.avatar}
-        />
-      </TouchableOpacity>
+      {showAvatar && (
+        <TouchableOpacity style={styles.avatarWrapper} onPress={onMenuPress} activeOpacity={0.8}>
+          <Image
+            source={{ uri: 'https://i.pravatar.cc/150?img=12' }}
+            style={styles.avatar}
+          />
+        </TouchableOpacity>
+      )}
+      {!showAvatar && <View style={styles.spacer} />}
     </View>
   );
 }
@@ -49,6 +57,8 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#1C140D',
     letterSpacing: -0.3,
+    flex: 1,
+    textAlign: 'center',
   },
   avatarWrapper: {
     width: 40,
@@ -62,5 +72,8 @@ const styles = StyleSheet.create({
   avatar: {
     width: '100%',
     height: '100%',
+  },
+  spacer: {
+    width: 40,
   },
 });

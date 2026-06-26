@@ -1,14 +1,17 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useReminders } from './hooks/useReminders';
 import ReminderItem from './components/ReminderItem';
+import AppHeader from '@/components/AppHeader';
+import AppDrawer from '@/components/AppDrawer';
 import FAB from '@/features/household/components/FAB';
 
 export default function RemindersScreen() {
   const router = useRouter();
   const { reminders, loading, toggleReminder, loadReminders } = useReminders();
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -27,30 +30,34 @@ export default function RemindersScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <View style={styles.container}>
-        <Text style={styles.headerTitle}>Reminders</Text>
+    <>
+      <SafeAreaView style={styles.safe}>
+        <View style={styles.container}>
+          <AppHeader title="Reminders" onMenuPress={() => setDrawerOpen(true)} />
 
-        {reminders.length === 0 ? (
-          <View style={styles.empty}>
-            <Text style={styles.emptyText}>No reminders yet</Text>
-            <Text style={styles.emptySubtext}>Tap + to create one</Text>
-          </View>
-        ) : (
-          <FlatList
-            data={reminders}
-            keyExtractor={(item) => item.id}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.list}
-            renderItem={({ item }) => (
-              <ReminderItem item={item} onToggle={toggleReminder} />
-            )}
-          />
-        )}
-      </View>
+          {reminders.length === 0 ? (
+            <View style={styles.empty}>
+              <Text style={styles.emptyText}>No reminders yet</Text>
+              <Text style={styles.emptySubtext}>Tap + to create one</Text>
+            </View>
+          ) : (
+            <FlatList
+              data={reminders}
+              keyExtractor={(item) => item.id}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.list}
+              renderItem={({ item }) => (
+                <ReminderItem item={item} onToggle={toggleReminder} />
+              )}
+            />
+          )}
+        </View>
 
-      <FAB onPress={() => router.push('/create-reminder')} />
-    </SafeAreaView>
+        <FAB onPress={() => router.push('/create-reminder')} />
+      </SafeAreaView>
+
+      <AppDrawer visible={drawerOpen} onClose={() => setDrawerOpen(false)} />
+    </>
   );
 }
 
@@ -67,12 +74,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  headerTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#1C140D',
-    marginBottom: 16,
   },
   list: {
     paddingBottom: 80,

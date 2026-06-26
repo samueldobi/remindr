@@ -1,25 +1,25 @@
-import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { CATEGORY_ICON_MAP } from '@/constants/BillCategories';
+import type { Bill } from '../types';
 
-const INITIAL_BILLS = [
-  { id: '1', name: 'Electricity Bill', amount: '₦24,500', dueDate: 'Jan 15', status: 'unpaid', category: 'Utility', icon: 'flash-outline' },
-  { id: '2', name: 'House Rent', amount: '₦350,000', dueDate: 'Jan 15', status: 'unpaid', category: 'Housing', icon: 'home-outline' },
-  { id: '3', name: 'Cooking Gas', amount: '₦8,500', dueDate: 'Jan 16', status: 'paid', category: 'Utility', icon: 'flame-outline' },
-  { id: '4', name: 'Car Servicing', amount: '₦45,000', dueDate: 'Jan 16', status: 'unpaid', category: 'Transport', icon: 'car-outline' },
-  { id: '5', name: 'Internet Subscription', amount: '₦15,000', dueDate: 'Jan 17', status: 'paid', category: 'Utility', icon: 'wifi-outline' },
-  { id: '6', name: 'Water Bill', amount: '₦6,200', dueDate: 'Jan 22', status: 'unpaid', category: 'Utility', icon: 'water-outline' },
-];
+type BillsProps = {
+  bills: Bill[];
+  onToggle: (id: string) => void;
+};
 
-export default function Bills() {
-  const [bills, setBills] = useState(INITIAL_BILLS);
+function formatAmount(amount: number) {
+  return `₦${amount.toLocaleString()}`;
+}
 
-  const togglePaid = (id: string) => {
-    setBills(prev =>
-      prev.map(b => b.id === id ? { ...b, status: b.status === 'paid' ? 'unpaid' : 'paid' } : b)
-    );
-  };
+function formatDueDate(dateStr: string, timeStr: string) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr + 'T' + (timeStr || '12:00'));
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return `${months[d.getMonth()]} ${d.getDate()}`;
+}
 
+export default function Bills({ bills, onToggle }: BillsProps) {
   const unpaid = bills.filter(b => b.status === 'unpaid').length;
   const total = bills.length;
   const paidAmount = bills.filter(b => b.status === 'paid').length;
@@ -46,38 +46,48 @@ export default function Bills() {
       </View>
 
       <Text style={styles.sectionTitle}>All Bills</Text>
-      {bills.map(bill => (
-        <TouchableOpacity
-          key={bill.id}
-          style={styles.billCard}
-          onPress={() => togglePaid(bill.id)}
-          activeOpacity={0.7}
-        >
-          <View style={styles.billLeft}>
-            <View style={[styles.iconBox, { backgroundColor: bill.status === 'paid' ? '#DCFCE7' : '#FFF5EA' }]}>
-              <Ionicons
-                name={bill.icon as any}
-                size={22}
-                color={bill.status === 'paid' ? '#16A34A' : '#F48C25'}
-              />
+
+      {bills.length === 0 ? (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyText}>No bills yet</Text>
+          <Text style={styles.emptySubtext}>Tap + to add one</Text>
+        </View>
+      ) : (
+        bills.map(bill => (
+          <TouchableOpacity
+            key={bill.id}
+            style={styles.billCard}
+            onPress={() => onToggle(bill.id)}
+            activeOpacity={0.7}
+          >
+            <View style={styles.billLeft}>
+              <View style={[styles.iconBox, { backgroundColor: bill.status === 'paid' ? '#DCFCE7' : '#FFF5EA' }]}>
+                <Ionicons
+                  name={(CATEGORY_ICON_MAP[bill.category] || 'receipt-outline') as any}
+                  size={22}
+                  color={bill.status === 'paid' ? '#16A34A' : '#F48C25'}
+                />
+              </View>
+              <View style={styles.billInfo}>
+                <Text style={styles.billName}>{bill.name}</Text>
+                <Text style={styles.billCategory}>
+                  {bill.category} • Due {formatDueDate(bill.dueDate, bill.dueTime)}
+                </Text>
+              </View>
             </View>
-            <View style={styles.billInfo}>
-              <Text style={styles.billName}>{bill.name}</Text>
-              <Text style={styles.billCategory}>{bill.category} • Due {bill.dueDate}</Text>
-            </View>
-          </View>
-          <View style={styles.billRight}>
-            <Text style={[styles.billAmount, bill.status === 'paid' && styles.billAmountPaid]}>
-              {bill.amount}
-            </Text>
-            <View style={[styles.statusBadge, { backgroundColor: bill.status === 'paid' ? '#DCFCE7' : '#FEF3C7' }]}>
-              <Text style={[styles.statusText, { color: bill.status === 'paid' ? '#16A34A' : '#D97706' }]}>
-                {bill.status === 'paid' ? 'Paid' : 'Unpaid'}
+            <View style={styles.billRight}>
+              <Text style={[styles.billAmount, bill.status === 'paid' && styles.billAmountPaid]}>
+                {formatAmount(bill.amount)}
               </Text>
+              <View style={[styles.statusBadge, { backgroundColor: bill.status === 'paid' ? '#DCFCE7' : '#FEF3C7' }]}>
+                <Text style={[styles.statusText, { color: bill.status === 'paid' ? '#16A34A' : '#D97706' }]}>
+                  {bill.status === 'paid' ? 'Paid' : 'Unpaid'}
+                </Text>
+              </View>
             </View>
-          </View>
-        </TouchableOpacity>
-      ))}
+          </TouchableOpacity>
+        ))
+      )}
     </View>
   );
 }
@@ -191,5 +201,19 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     textTransform: 'uppercase',
     letterSpacing: 0.4,
+  },
+  emptyState: {
+    paddingVertical: 40,
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 15,
+    color: '#9C7349',
+    fontWeight: '600',
+  },
+  emptySubtext: {
+    fontSize: 13,
+    color: '#9C7349',
+    marginTop: 4,
   },
 });

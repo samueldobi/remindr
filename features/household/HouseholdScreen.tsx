@@ -3,7 +3,8 @@ import { View, ScrollView, Alert, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from 'expo-router';
 
-import Header from './components/Header';
+import AppHeader from '@/components/AppHeader';
+import AppDrawer from '@/components/AppDrawer';
 import SegmentedControl from './components/SegmentedControl';
 import FAB from './components/FAB';
 
@@ -18,13 +19,17 @@ import { useShoppingLists } from '@/features/shopping/hooks/useShoppingLists';
 import type { ShoppingList } from '@/features/shopping/types';
 
 import Bills from '@/features/bills/components/Bills';
+import CreateBillForm from '@/features/bills/components/CreateBillForm';
+import { useBills } from '@/features/bills/hooks/useBills';
 
-type FormMode = 'task' | 'shopping' | null;
+type FormMode = 'task' | 'shopping' | 'bill' | null;
 
 export default function HouseholdScreen() {
   const { tasks, addTask, markDone, loadTasks } = useHouseholdTasks();
   const { lists, addList, toggleItem, loadLists } = useShoppingLists();
+  const { bills, addBill, togglePaid, loadBills } = useBills();
 
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('Tasks');
   const [formMode, setFormMode] = useState<FormMode>(null);
   const [selectedList, setSelectedList] = useState<ShoppingList | null>(null);
@@ -33,6 +38,7 @@ export default function HouseholdScreen() {
     useCallback(() => {
       loadTasks();
       loadLists();
+      loadBills();
     }, [])
   );
 
@@ -41,6 +47,8 @@ export default function HouseholdScreen() {
       setFormMode('task');
     } else if (activeTab === 'Shopping') {
       setFormMode('shopping');
+    } else if (activeTab === 'Bills') {
+      setFormMode('bill');
     }
   };
 
@@ -66,6 +74,15 @@ export default function HouseholdScreen() {
     }
   };
 
+  const handleBillSubmit = async (data: { name: string; amount: number; category: string; dueDate: string; dueTime: string }) => {
+    try {
+      await addBill(data);
+      setFormMode(null);
+    } catch {
+      Alert.alert('Error', 'Failed to create bill');
+    }
+  };
+
   const renderContent = () => {
     if (formMode === 'task') {
       return <CreateTaskForm onSubmit={handleTaskSubmit} onCancel={() => setFormMode(null)} />;
@@ -73,6 +90,10 @@ export default function HouseholdScreen() {
 
     if (formMode === 'shopping') {
       return <CreateShoppingForm onSubmit={handleShoppingSubmit} onCancel={() => setFormMode(null)} />;
+    }
+
+    if (formMode === 'bill') {
+      return <CreateBillForm onSubmit={handleBillSubmit} onCancel={() => setFormMode(null)} />;
     }
 
     if (activeTab === 'Tasks') {
@@ -92,32 +113,49 @@ export default function HouseholdScreen() {
       return <ShoppingLists lists={lists} onSelect={setSelectedList} />;
     }
 
-    return <Bills />;
+    if (activeTab === 'Bills') {
+      return <Bills bills={bills} onToggle={togglePaid} />;
+    }
+
+    return null;
   };
 
+  const isDetailView = activeTab === 'Shopping' && !!selectedList;
+  const needsScrollView = !formMode && !isDetailView;
+
   return (
-    <SafeAreaView style={styles.safe}>
-      <View style={styles.container}>
-        <Header onMenuPress={() => {}} />
+    <>
+      <SafeAreaView style={styles.safe}>
+        <View style={styles.container}>
+          <AppHeader title="Household Board" onMenuPress={() => setDrawerOpen(true)} />
 
-        {!formMode && (
-          <SegmentedControl activeTab={activeTab} onTabChange={(tab) => {
-            setActiveTab(tab);
-            setSelectedList(null);
-          }} />
-        )}
+          {!formMode && (
+            <SegmentedControl activeTab={activeTab} onTabChange={(tab: string) => {
+              setActiveTab(tab);
+              setSelectedList(null);
+            }} />
+          )}
 
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-        >
-          {renderContent()}
-        </ScrollView>
+          {needsScrollView ? (
+            <ScrollView
+              contentContainerStyle={styles.scrollContent}
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+            >
+              {renderContent()}
+            </ScrollView>
+          ) : (
+            <View style={styles.scrollContent}>
+              {renderContent()}
+            </View>
+          )}
 
-        {!formMode && !selectedList && <FAB onPress={handleFABPress} />}
-      </View>
-    </SafeAreaView>
+          {!formMode && !selectedList && <FAB onPress={handleFABPress} />}
+        </View>
+      </SafeAreaView>
+
+      <AppDrawer visible={drawerOpen} onClose={() => setDrawerOpen(false)} />
+    </>
   );
 }
 
