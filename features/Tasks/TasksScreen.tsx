@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 
 import Header from './components/Header';
 import SegmentedControl from './components/SegmentedControl';
@@ -16,10 +17,13 @@ const CONTENT = {
 };
 
 export default function TaskListScreen() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('Tasks');
 
   const handleFABPress = () => {
-    console.log('FAB pressed on tab:', activeTab);
+    if (activeTab === 'Tasks') {
+      router.push('/create-task');
+    }
   };
 
   return (

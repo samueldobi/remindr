@@ -55,6 +55,7 @@ function RootLayoutNav() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
         <Stack.Screen name="create-reminder" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="create-task" options={{ presentation: 'modal' }} />
       </Stack>
       </PaperProvider>
     </ThemeProvider>
