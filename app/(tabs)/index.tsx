@@ -1,5 +1,5 @@
 import HomeScreen  from '@/features/home/HomeScreen';
-export default function TabOneScreen() {
+export default function HomeScreenTab() {
   return (
     <HomeScreen/>
   );

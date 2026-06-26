@@ -20,10 +20,8 @@ export default function JointSavings() {
       <Text style={styles.sectionTitle}>Joint Savings</Text>
 
       <View style={styles.card}>
-        {/* Decorative bg text */}
         <Text style={styles.bgDecor}>💰</Text>
 
-        {/* Top row */}
         <View style={styles.topRow}>
           <Text style={styles.goalLabel}>{label}</Text>
           <View style={styles.targetBadge}>
@@ -31,13 +29,11 @@ export default function JointSavings() {
           </View>
         </View>
 
-        {/* Amount + percent */}
         <View style={styles.amountRow}>
           <Text style={styles.amount}>{formatNaira(current)}</Text>
           <Text style={styles.percent}>{percent}%</Text>
         </View>
 
-        {/* Progress bar */}
         <View style={styles.progressTrack}>
           <View style={[styles.progressFill, { width: `${percent}%` }]} />
         </View>

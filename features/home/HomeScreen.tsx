@@ -1,4 +1,4 @@
-import { StyleSheet, Button , View, Image, 
+import {  View, Image, 
   TouchableWithoutFeedback, Keyboard,
   TouchableOpacity} from 'react-native';
 import DailyOverview from './components/DailyOverview';
@@ -28,7 +28,6 @@ export default function HomeScreenTab() {
           <View style={styles.headerView}>
             <View>
               <Text style={styles.headerTitle}>Welcome Julia</Text>
-              {/* <Text style={styles.headerSubtitle}>8 pending bills</Text> */}
             </View>
             <View>
               <TouchableOpacity onPress={() => setDrawerOpen(true)}>

@@ -3,7 +3,6 @@ import { View, Image } from 'react-native';
 import { Text } from '@/components/Themed';
 import { taskItemStyles as styles } from './taskItem.styles';
 import { Task } from './types';
-// import { taskSections } from '@/constants/Tasks';
 
 type TaskItemProps = {
   item: Task;
