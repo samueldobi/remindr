@@ -1,5 +1,6 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView, Dimensions } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Dimensions, TouchableOpacity } from "react-native";
+import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
 const { width } = Dimensions.get("window");
@@ -85,12 +86,15 @@ const getBottomText = (status, days) => {
 };
 
 const UpcomingReminders = () => {
+  const router = useRouter();
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>Reminders Due Soon</Text>
-        <Text style={styles.seeAll}>See all</Text>
+        <TouchableOpacity onPress={() => router.push('/reminders')} activeOpacity={0.7}>
+          <Text style={styles.seeAll}>See all</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Scroll Cards */}

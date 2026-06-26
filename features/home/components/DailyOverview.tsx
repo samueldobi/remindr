@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
+import { useRouter } from 'expo-router';
 import Svg, { Circle } from 'react-native-svg';
 
 const ACCENT = '#F48C25';
@@ -70,6 +71,7 @@ function Checkbox({ done, label }) {
 }
 
 export default function DailyOverview() {
+  const router = useRouter();
   return (
     <View style={styles.card}>
       {/* Header */}
@@ -89,7 +91,7 @@ export default function DailyOverview() {
       </View>
 
       {/* View All Button */}
-      <TouchableOpacity style={styles.button} activeOpacity={0.8}>
+      <TouchableOpacity style={styles.button} activeOpacity={0.8} onPress={() => router.push('/reminders')}>
         <Text style={styles.buttonText}>View All Tasks</Text>
       </TouchableOpacity>
     </View>
