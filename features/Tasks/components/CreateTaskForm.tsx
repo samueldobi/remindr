@@ -60,6 +60,10 @@ export default function CreateTaskForm({ onSubmit, onCancel }: CreateTaskFormPro
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"
     >
+      <TouchableOpacity style={styles.closeBtn} onPress={onCancel} activeOpacity={0.7}>
+        <Text style={styles.closeBtnText}>Cancel</Text>
+      </TouchableOpacity>
+
       <Text style={styles.title}>New Task</Text>
 
       <View style={styles.field}>
@@ -191,6 +195,16 @@ const styles = StyleSheet.create({
   content: {
     padding: 20,
     paddingBottom: 40,
+  },
+  closeBtn: {
+    alignSelf: 'flex-end',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+  },
+  closeBtnText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#9C7349',
   },
   title: {
     fontSize: 22,

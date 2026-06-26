@@ -1,5 +1,5 @@
-import TaskScreen from '@/features/Tasks/TasksScreen';
+import HouseholdScreen from '@/features/household/HouseholdScreen';
 
 export default function Tasks() {
-  return <TaskScreen />;
+  return <HouseholdScreen />;
 }

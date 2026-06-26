@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useReminders } from './hooks/useReminders';
 import ReminderItem from './components/ReminderItem';
-import FAB from '@/features/Tasks/components/FAB';
+import FAB from '@/features/household/components/FAB';
 
 export default function RemindersScreen() {
   const router = useRouter();

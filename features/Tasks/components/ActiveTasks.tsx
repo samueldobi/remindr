@@ -1,7 +1,4 @@
-import { useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useFocusEffect } from 'expo-router';
-import { useHouseholdTasks } from '../hooks/useHouseholdTasks';
 import type { HouseholdTask, TaskStatus } from '../types';
 
 const STATUS_META: Record<TaskStatus, { label: string; color: string; bg: string }> = {
@@ -48,15 +45,12 @@ function TaskCard({ task, onMarkDone }: { task: HouseholdTask; onMarkDone: (id: 
   );
 }
 
-export default function ActiveTasks() {
-  const { tasks, loading, markDone, loadTasks } = useHouseholdTasks();
+type ActiveTasksProps = {
+  tasks: HouseholdTask[];
+  onMarkDone: (id: string) => void;
+};
 
-  useFocusEffect(
-    useCallback(() => {
-      loadTasks();
-    }, [])
-  );
-
+export default function ActiveTasks({ tasks, onMarkDone }: ActiveTasksProps) {
   const activeTasks = tasks.filter(t => !t.completed);
   const completedCount = tasks.filter(t => t.completed).length;
 
@@ -71,7 +65,7 @@ export default function ActiveTasks() {
 
       {activeTasks.length === 0 && completedCount > 0 ? (
         <View style={styles.emptyState}>
-          <Text style={styles.emptyText}>🎉 All tasks are done!</Text>
+          <Text style={styles.emptyText}>All tasks are done!</Text>
         </View>
       ) : activeTasks.length === 0 ? (
         <View style={styles.emptyState}>
@@ -80,7 +74,7 @@ export default function ActiveTasks() {
         </View>
       ) : (
         activeTasks.map(task => (
-          <TaskCard key={task.id} task={task} onMarkDone={markDone} />
+          <TaskCard key={task.id} task={task} onMarkDone={onMarkDone} />
         ))
       )}
     </View>

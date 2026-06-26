@@ -26,7 +26,6 @@ export default function Bills() {
 
   return (
     <View style={styles.container}>
-      {/* Summary card */}
       <View style={styles.summaryCard}>
         <View style={styles.summaryRow}>
           <View style={styles.summaryItem}>
@@ -46,7 +45,6 @@ export default function Bills() {
         </View>
       </View>
 
-      {/* Bill list */}
       <Text style={styles.sectionTitle}>All Bills</Text>
       {bills.map(bill => (
         <TouchableOpacity
