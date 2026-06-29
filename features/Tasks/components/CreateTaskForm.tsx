@@ -11,18 +11,10 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { categories } from '@/constants/Categories';
-import type { TaskStatus } from '../types';
-
-const STATUS_OPTIONS: { label: string; value: TaskStatus }[] = [
-  { label: 'Urgent', value: 'urgent' },
-  { label: 'Pending', value: 'pending' },
-  { label: 'In Progress', value: 'in_progress' },
-];
 
 const taskSchema = z.object({
   title: z.string().min(1, 'Title is required').max(100),
   category: z.string().min(1, 'Select a category'),
-  status: z.string().min(1, 'Select a status'),
 });
 
 type FormData = z.infer<typeof taskSchema>;
@@ -34,7 +26,6 @@ type CreateTaskFormProps = {
 
 export default function CreateTaskForm({ onSubmit, onCancel }: CreateTaskFormProps) {
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
-  const [showStatusPicker, setShowStatusPicker] = useState(false);
 
   const {
     control,
@@ -47,12 +38,10 @@ export default function CreateTaskForm({ onSubmit, onCancel }: CreateTaskFormPro
     defaultValues: {
       title: '',
       category: '',
-      status: '',
     },
   });
 
   const selectedCategory = watch('category');
-  const selectedStatus = watch('status');
 
   return (
     <ScrollView
@@ -89,10 +78,7 @@ export default function CreateTaskForm({ onSubmit, onCancel }: CreateTaskFormPro
         <Text style={styles.label}>Category</Text>
         <TouchableOpacity
           style={styles.input}
-          onPress={() => {
-            setShowCategoryPicker(!showCategoryPicker);
-            setShowStatusPicker(false);
-          }}
+          onPress={() => setShowCategoryPicker(!showCategoryPicker)}
         >
           <Text style={selectedCategory ? styles.inputText : styles.placeholderText}>
             {selectedCategory || 'Select category'}
@@ -120,50 +106,6 @@ export default function CreateTaskForm({ onSubmit, onCancel }: CreateTaskFormPro
                   ]}
                 >
                   {cat.name}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
-      </View>
-
-      <View style={styles.field}>
-        <Text style={styles.label}>Status</Text>
-        <TouchableOpacity
-          style={styles.input}
-          onPress={() => {
-            setShowStatusPicker(!showStatusPicker);
-            setShowCategoryPicker(false);
-          }}
-        >
-          <Text style={selectedStatus ? styles.inputText : styles.placeholderText}>
-            {selectedStatus
-              ? STATUS_OPTIONS.find(s => s.value === selectedStatus)?.label || selectedStatus
-              : 'Select status'}
-          </Text>
-        </TouchableOpacity>
-        {errors.status && <Text style={styles.error}>{errors.status.message}</Text>}
-        {showStatusPicker && (
-          <View style={styles.pickerList}>
-            {STATUS_OPTIONS.map((opt) => (
-              <TouchableOpacity
-                key={opt.value}
-                style={[
-                  styles.pickerOption,
-                  selectedStatus === opt.value && styles.pickerOptionActive,
-                ]}
-                onPress={() => {
-                  setValue('status', opt.value, { shouldValidate: true });
-                  setShowStatusPicker(false);
-                }}
-              >
-                <Text
-                  style={[
-                    styles.pickerOptionText,
-                    selectedStatus === opt.value && styles.pickerOptionTextActive,
-                  ]}
-                >
-                  {opt.label}
                 </Text>
               </TouchableOpacity>
             ))}

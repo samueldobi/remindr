@@ -25,7 +25,7 @@ import { useBills } from '@/features/bills/hooks/useBills';
 type FormMode = 'task' | 'shopping' | 'bill' | null;
 
 export default function HouseholdScreen() {
-  const { tasks, addTask, markDone, loadTasks } = useHouseholdTasks();
+  const { tasks, addTask, markDone, deleteTask, loadTasks } = useHouseholdTasks();
   const { lists, addList, toggleItem, loadLists } = useShoppingLists();
   const { bills, addBill, togglePaid, loadBills } = useBills();
 
@@ -52,13 +52,9 @@ export default function HouseholdScreen() {
     }
   };
 
-  const handleTaskSubmit = async (data: { title: string; category: string; status: string }) => {
+  const handleTaskSubmit = async (data: { title: string; category: string }) => {
     try {
-      await addTask({
-        title: data.title,
-        category: data.category,
-        status: data.status as 'urgent' | 'pending' | 'in_progress',
-      });
+      await addTask({ title: data.title, category: data.category });
       setFormMode(null);
     } catch {
       Alert.alert('Error', 'Failed to create task');
@@ -97,7 +93,7 @@ export default function HouseholdScreen() {
     }
 
     if (activeTab === 'Tasks') {
-      return <ActiveTasks tasks={tasks} onMarkDone={markDone} />;
+      return <ActiveTasks tasks={tasks} onMarkDone={markDone} onDeleteTask={deleteTask} />;
     }
 
     if (activeTab === 'Shopping') {

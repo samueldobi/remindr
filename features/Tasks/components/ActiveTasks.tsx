@@ -1,80 +1,98 @@
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import type { HouseholdTask, TaskStatus } from '../types';
+import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+import { Swipeable } from 'react-native-gesture-handler';
+import { Ionicons } from '@expo/vector-icons';
+import type { Task } from '../types';
 
-const STATUS_META: Record<TaskStatus, { label: string; color: string; bg: string }> = {
-  urgent: { label: 'Urgent', color: '#EA580C', bg: '#FEF3C7' },
-  pending: { label: 'Pending', color: '#D97706', bg: '#FFF5EA' },
-  in_progress: { label: 'In Progress', color: '#2563EB', bg: '#DBEAFE' },
-};
+function TaskCard({
+  task,
+  onMarkDone,
+  onDelete,
+}: {
+  task: Task;
+  onMarkDone: (id: string) => void;
+  onDelete: (id: string) => void;
+}) {
+  const renderRightActions = (
+    progress: Animated.AnimatedInterpolation<number>,
+  ) => {
+    const translateX = progress.interpolate({
+      inputRange: [0, 1],
+      outputRange: [80, 0],
+    });
 
-function TaskCard({ task, onMarkDone }: { task: HouseholdTask; onMarkDone: (id: string) => void }) {
-  const statusMeta = STATUS_META[task.status];
-
-  return (
-    <View style={styles.card}>
-      <View style={styles.cardTop}>
-        <View style={styles.cardInfo}>
-          <View style={styles.categoryRow}>
-            <View style={styles.categoryBadge}>
-              <Text style={styles.categoryText}>{task.category}</Text>
-            </View>
-            {task.completed && <Text style={styles.completedTag}>Completed</Text>}
-          </View>
-          <Text style={[styles.taskTitle, task.completed && styles.taskTitleDone]}>
-            {task.title}
-          </Text>
-        </View>
-
-        <View style={[styles.statusBadge, { backgroundColor: statusMeta.bg }]}>
-          <Text style={[styles.statusText, { color: statusMeta.color }]}>
-            {statusMeta.label}
-          </Text>
-        </View>
-      </View>
-
-      {!task.completed && (
+    return (
+      <Animated.View style={[styles.deleteAction, { transform: [{ translateX }] }]}>
         <TouchableOpacity
-          style={styles.doneBtn}
-          onPress={() => onMarkDone(task.id)}
+          style={styles.deleteBtn}
+          onPress={() => onDelete(task.id)}
           activeOpacity={0.8}
         >
-          <Text style={styles.doneBtnText}>Mark Done</Text>
+          <Ionicons name="trash-outline" size={22} color="#FFF" />
+          <Text style={styles.deleteBtnText}>Delete</Text>
         </TouchableOpacity>
-      )}
-    </View>
+      </Animated.View>
+    );
+  };
+
+  return (
+    <Swipeable renderRightActions={renderRightActions} overshootRight={false}>
+      <View style={[styles.card, task.completed && styles.cardDone]}>
+        <View style={styles.cardTop}>
+          <View style={styles.cardInfo}>
+            <View style={styles.categoryRow}>
+              <View style={styles.categoryBadge}>
+                <Text style={styles.categoryText}>{task.category}</Text>
+              </View>
+              {task.completed && <Text style={styles.completedTag}>Done</Text>}
+            </View>
+            <Text style={[styles.taskTitle, task.completed && styles.taskTitleDone]}>
+              {task.title}
+            </Text>
+          </View>
+
+          {task.completed ? (
+            <View style={styles.doneBadge}>
+              <Text style={styles.doneBtnText}>✓</Text>
+            </View>
+          ) : (
+            <TouchableOpacity
+              style={styles.doneBtn}
+              onPress={() => onMarkDone(task.id)}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.doneBtnText}>Mark Done</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+    </Swipeable>
   );
 }
 
 type ActiveTasksProps = {
-  tasks: HouseholdTask[];
+  tasks: Task[];
   onMarkDone: (id: string) => void;
+  onDeleteTask: (id: string) => void;
 };
 
-export default function ActiveTasks({ tasks, onMarkDone }: ActiveTasksProps) {
-  const activeTasks = tasks.filter(t => !t.completed);
-  const completedCount = tasks.filter(t => t.completed).length;
-
+export default function ActiveTasks({ tasks, onMarkDone, onDeleteTask }: ActiveTasksProps) {
   return (
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Active Tasks</Text>
+        <Text style={styles.sectionTitle}>Tasks</Text>
         <View style={styles.pendingBadge}>
-          <Text style={styles.pendingText}>{activeTasks.length} Active</Text>
+          <Text style={styles.pendingText}>{tasks.length} Total</Text>
         </View>
       </View>
 
-      {activeTasks.length === 0 && completedCount > 0 ? (
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyText}>All tasks are done!</Text>
-        </View>
-      ) : activeTasks.length === 0 ? (
+      {tasks.length === 0 ? (
         <View style={styles.emptyState}>
           <Text style={styles.emptyText}>No tasks yet</Text>
           <Text style={styles.emptySubtext}>Tap + to create one</Text>
         </View>
       ) : (
-        activeTasks.map(task => (
-          <TaskCard key={task.id} task={task} onMarkDone={onMarkDone} />
+        tasks.map(task => (
+          <TaskCard key={task.id} task={task} onMarkDone={onMarkDone} onDelete={onDeleteTask} />
         ))
       )}
     </View>
@@ -112,15 +130,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 14,
     padding: 14,
-    marginBottom: 12,
     gap: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
     borderWidth: 1,
     borderColor: 'rgba(244,140,37,0.06)',
+  },
+  cardDone: {
+    opacity: 0.6,
   },
   cardTop: {
     flexDirection: 'row',
@@ -165,26 +180,40 @@ const styles = StyleSheet.create({
     color: '#9C7349',
     textDecorationLine: 'line-through',
   },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 99,
-  },
-  statusText: {
-    fontSize: 10,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 0.4,
-  },
   doneBtn: {
     backgroundColor: '#F48C25',
     paddingVertical: 9,
+    paddingHorizontal: 14,
     borderRadius: 10,
-    alignItems: 'center',
   },
   doneBtnText: {
     color: '#FFF',
     fontSize: 13,
+    fontWeight: '700',
+  },
+  doneBadge: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#16A34A',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  deleteAction: {
+    backgroundColor: '#DA3D20',
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    paddingHorizontal: 16,
+    width: 80,
+  },
+  deleteBtn: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+  },
+  deleteBtnText: {
+    color: '#FFF',
+    fontSize: 11,
     fontWeight: '700',
   },
   emptyState: {

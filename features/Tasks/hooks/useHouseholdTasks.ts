@@ -1,75 +1,81 @@
 import { useState, useEffect, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { HouseholdTask, TaskStatus } from '../types';
-
-const STORAGE_KEY = '@household_tasks';
-
-const DEFAULT_TASKS: HouseholdTask[] = [
-  {
-    id: '1',
-    title: 'Buy Fuel for Gen',
-    category: 'Utilities',
-    status: 'urgent',
-    completed: false,
-    createdAt: '2026-06-25T12:00:00.000Z',
-  },
-  {
-    id: '2',
-    title: 'Pay NEPA Bill',
-    category: 'Finance',
-    status: 'in_progress',
-    completed: false,
-    createdAt: '2026-06-25T12:00:00.000Z',
-  },
-];
+import type { Task } from '../types';
+import { fetchTasks, createTask as createTaskApi, deleteTask as deleteTaskApi, TASKS_CACHE_KEY } from '../service';
 
 export function useHouseholdTasks() {
-  const [tasks, setTasks] = useState<HouseholdTask[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadTasks();
   }, []);
 
-  const loadTasks = async () => {
+  const loadTasks = useCallback(async () => {
     try {
-      const stored = await AsyncStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        setTasks(JSON.parse(stored));
-      } else {
-        setTasks(DEFAULT_TASKS);
-        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_TASKS));
+      const cached = await AsyncStorage.getItem(TASKS_CACHE_KEY);
+      if (cached) {
+        setTasks(JSON.parse(cached));
       }
+
+      const fresh = await fetchTasks();
+      setTasks(fresh);
+      await AsyncStorage.setItem(TASKS_CACHE_KEY, JSON.stringify(fresh));
     } catch {
-      setTasks(DEFAULT_TASKS);
+      // Cached data is already showing; API failure is non-blocking
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const persist = async (updated: HouseholdTask[]) => {
+  const persist = async (updated: Task[]) => {
     setTasks(updated);
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    await AsyncStorage.setItem(TASKS_CACHE_KEY, JSON.stringify(updated));
   };
 
-  const addTask = useCallback(async (task: Omit<HouseholdTask, 'id' | 'createdAt' | 'completed'>) => {
-    const newTask: HouseholdTask = {
-      ...task,
-      id: Date.now().toString(),
+  const addTask = useCallback(async (data: { title: string; category?: string }) => {
+    const tempTask: Task = {
+      ...data,
+      category: data.category || '',
+      id: `temp-${Date.now()}`,
+      user_id: '',
       completed: false,
-      createdAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
-    const updated = [newTask, ...tasks];
+
+    const updated = [tempTask, ...tasks];
     await persist(updated);
-    return newTask;
+
+    try {
+      const created = await createTaskApi(data);
+      const synced = updated.map((t) => (t.id === tempTask.id ? created : t));
+      await persist(synced);
+      return created;
+    } catch (e) {
+      const reverted = tasks.filter((t) => t.id !== tempTask.id);
+      await persist(reverted);
+      throw e;
+    }
   }, [tasks]);
 
   const markDone = useCallback(async (id: string) => {
-    const updated = tasks.map(t =>
-      t.id === id ? { ...t, completed: true } : t
+    const updated = tasks.map((t) =>
+      t.id === id ? { ...t, completed: true } : t,
     );
     await persist(updated);
   }, [tasks]);
 
-  return { tasks, loading, addTask, markDone, loadTasks };
+  const removeTask = useCallback(async (id: string) => {
+    const updated = tasks.filter((t) => t.id !== id);
+    await persist(updated);
+
+    try {
+      await deleteTaskApi(id);
+    } catch {
+      loadTasks();
+    }
+  }, [tasks, loadTasks]);
+
+  return { tasks, loading, addTask, markDone, deleteTask: removeTask, loadTasks };
 }

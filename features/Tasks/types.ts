@@ -1,10 +1,9 @@
-export type TaskStatus = 'urgent' | 'pending' | 'in_progress';
-
-export type HouseholdTask = {
+export type Task = {
   id: string;
+  user_id: string;
   title: string;
   category: string;
-  status: TaskStatus;
   completed: boolean;
-  createdAt: string;
+  created_at: string;
+  updated_at: string;
 };
