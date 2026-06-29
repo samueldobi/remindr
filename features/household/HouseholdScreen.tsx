@@ -16,7 +16,6 @@ import ShoppingLists from '@/features/shopping/components/ShoppingLists';
 import ShoppingListDetail from '@/features/shopping/components/ShoppingListDetail';
 import CreateShoppingForm from '@/features/shopping/components/CreateShoppingForm';
 import { useShoppingLists } from '@/features/shopping/hooks/useShoppingLists';
-import type { ShoppingList } from '@/features/shopping/types';
 
 import Bills from '@/features/bills/components/Bills';
 import CreateBillForm from '@/features/bills/components/CreateBillForm';
@@ -26,13 +25,15 @@ type FormMode = 'task' | 'shopping' | 'bill' | null;
 
 export default function HouseholdScreen() {
   const { tasks, addTask, markDone, deleteTask, loadTasks } = useHouseholdTasks();
-  const { lists, addList, toggleItem, loadLists } = useShoppingLists();
+  const { lists, addList, toggleItem, deleteList, addListItem, renameListItem, deleteListItem, loadLists } = useShoppingLists();
   const { bills, addBill, togglePaid, loadBills } = useBills();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('Tasks');
   const [formMode, setFormMode] = useState<FormMode>(null);
-  const [selectedList, setSelectedList] = useState<ShoppingList | null>(null);
+  const [selectedListId, setSelectedListId] = useState<string | null>(null);
+
+  const selectedList = selectedListId ? lists.find((l) => l.id === selectedListId) ?? null : null;
 
   useFocusEffect(
     useCallback(() => {
@@ -63,7 +64,7 @@ export default function HouseholdScreen() {
 
   const handleShoppingSubmit = async (title: string, items: string[]) => {
     try {
-      await addList(title, items.map(name => ({ name })));
+      await addList(title, items);
       setFormMode(null);
     } catch {
       Alert.alert('Error', 'Failed to create shopping list');
@@ -102,11 +103,14 @@ export default function HouseholdScreen() {
           <ShoppingListDetail
             list={selectedList}
             onToggle={toggleItem}
-            onBack={() => setSelectedList(null)}
+            onAddItem={addListItem}
+            onRenameItem={renameListItem}
+            onDeleteItem={deleteListItem}
+            onBack={() => setSelectedListId(null)}
           />
         );
       }
-      return <ShoppingLists lists={lists} onSelect={setSelectedList} />;
+      return <ShoppingLists lists={lists} onSelect={(l) => setSelectedListId(l.id)} onDeleteList={deleteList} />;
     }
 
     if (activeTab === 'Bills') {
@@ -116,7 +120,7 @@ export default function HouseholdScreen() {
     return null;
   };
 
-  const isDetailView = activeTab === 'Shopping' && !!selectedList;
+  const isDetailView = activeTab === 'Shopping' && !!selectedListId;
   const needsScrollView = !formMode && !isDetailView;
 
   return (
@@ -128,7 +132,7 @@ export default function HouseholdScreen() {
           {!formMode && (
             <SegmentedControl activeTab={activeTab} onTabChange={(tab: string) => {
               setActiveTab(tab);
-              setSelectedList(null);
+              setSelectedListId(null);
             }} />
           )}
 
@@ -146,7 +150,7 @@ export default function HouseholdScreen() {
             </View>
           )}
 
-          {!formMode && !selectedList && <FAB onPress={handleFABPress} />}
+          {!formMode && !selectedListId && <FAB onPress={handleFABPress} />}
         </View>
       </SafeAreaView>
 
