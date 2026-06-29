@@ -8,14 +8,13 @@ import { Provider as PaperProvider } from 'react-native-paper';
 
 import CustomSplashScreen from '@/components/CustomSplashScreen';
 import { useColorScheme } from '@/components/useColorScheme';
+import { useAuthStore } from '@/features/auth/store';
 
 export {
-  // Catch any errors thrown by the Layout component.
   ErrorBoundary,
 } from 'expo-router';
 
 export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: '(tabs)',
 };
 
@@ -28,6 +27,9 @@ export default function RootLayout() {
     ...FontAwesome.font,
   });
 
+  const isLoading = useAuthStore((s) => s.isLoading);
+  const loadStoredAuth = useAuthStore((s) => s.loadStoredAuth);
+
   useEffect(() => {
     if (error) throw error;
   }, [error]);
@@ -38,28 +40,39 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
+  useEffect(() => {
+    loadStoredAuth();
+  }, []);
+
   const handleSplashFinish = useCallback(() => {
     setSplashDone(true);
   }, []);
 
-  if (splashDone) {
-    return <RootLayoutNav />;
+  if (!splashDone) {
+    return <CustomSplashScreen loading={!loaded || isLoading} onFinish={handleSplashFinish} />;
   }
 
-  return <CustomSplashScreen loading={!loaded} onFinish={handleSplashFinish} />;
+  return <RootLayoutNav />;
 }
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <PaperProvider>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="create-reminder" options={{ presentation: 'modal' }} />
-      </Stack>
+        {isAuthenticated ? (
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+            <Stack.Screen name="create-reminder" options={{ presentation: 'modal' }} />
+          </Stack>
+        ) : (
+          <Stack>
+            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          </Stack>
+        )}
       </PaperProvider>
     </ThemeProvider>
   );

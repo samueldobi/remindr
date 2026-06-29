@@ -1,9 +1,12 @@
 import { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import AppHeader from '@/components/AppHeader';
 import AppDrawer from '@/components/AppDrawer';
+import { apiRequest } from '@/lib/api';
+import { useAuthStore } from '@/features/auth/store';
 
 const SECTIONS = [
   {
@@ -24,6 +27,28 @@ const SECTIONS = [
 
 export default function SettingsScreen() {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+  const logout = useAuthStore((s) => s.logout);
+
+  const handleLogout = () => {
+    Alert.alert('Logout', 'Are you sure you want to sign out?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Sign Out',
+        style: 'destructive',
+        onPress: async () => {
+          setLoggingOut(true);
+          try {
+            await apiRequest('/auth/logout', { method: 'POST' });
+          } catch {
+            // Proceed with local logout even if API call fails
+          }
+          await logout();
+          router.replace('/(auth)/login');
+        },
+      },
+    ]);
+  };
 
   return (
     <>
@@ -54,6 +79,24 @@ export default function SettingsScreen() {
                 </View>
               </View>
             ))}
+
+            <View style={[styles.section, styles.sectionGap]}>
+              <View style={styles.card}>
+                <TouchableOpacity
+                  style={styles.logoutRow}
+                  onPress={handleLogout}
+                  disabled={loggingOut}
+                  activeOpacity={0.6}
+                >
+                  <View style={styles.rowLeft}>
+                    <View style={styles.logoutIconBox}>
+                      <Ionicons name="log-out-outline" size={20} color="#DA3D20" />
+                    </View>
+                    <Text style={styles.logoutLabel}>Sign Out</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </View>
           </ScrollView>
         </View>
       </SafeAreaView>
@@ -130,5 +173,25 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: '#1C140D',
+  },
+  logoutRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+  },
+  logoutIconBox: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: 'rgba(218,61,32,0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logoutLabel: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#DA3D20',
   },
 });
