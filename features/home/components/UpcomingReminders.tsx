@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, ScrollView, Dimensions, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import type { Reminder } from "@/features/reminders/types";
 
 const { width } = Dimensions.get("window");
 
@@ -10,56 +11,17 @@ const CARD_SPACING = 16;
 
 const themeColor = "#F48C25";
 
-const reminderTypeIcons = {
-  bill: { name: "receipt-outline" },
-  event: { name: "calendar-outline" },
-  appointment: { name: "medical-outline" },
-  utility: { name: "flash-outline" },
-  personal: { name: "person-outline" },
+const categoryIconMap: Record<string, string> = {
+  Finance: "receipt-outline",
+  Personal: "person-outline",
+  Health: "medical-outline",
+  Work: "calendar-outline",
+  Home: "flash-outline",
+  Utility: "flash-outline",
+  Event: "calendar-outline",
+  Appointment: "medical-outline",
+  Bill: "receipt-outline",
 };
-
-const reminders = [
-  {
-    id: 1,
-    status: "overdue",
-    days: 3,
-    type: "Home & Utility",
-    description: "Pay electricity bill",
-    iconType: "bill",
-  },
-  {
-    id: 2,
-    status: "dueToday",
-    days: 0,
-    type: "Event",
-    description: "Attend PTA meeting",
-    iconType: "event",
-  },
-  {
-    id: 3,
-    status: "dueSoon",
-    days: 2,
-    type: "Appointment",
-    description: "Dental checkup",
-    iconType: "appointment",
-  },
-  {
-    id: 4,
-    status: "dueSoon",
-    days: 5,
-    type: "Personal",
-    description: "Go and pick up the kids",
-    iconType: "personal",
-  },
-  {
-    id: 5,
-    status: "dueToday",
-    days: 0,
-    type: "Home & Utility",
-    description: "Water bill payment",
-    iconType: "utility",
-  },
-];
 
 const statusStyles = {
   overdue: {
@@ -79,17 +41,33 @@ const statusStyles = {
   },
 };
 
-const getBottomText = (status, days) => {
+function getReminderStatus(dueDate: string, dueTime: string) {
+  const now = new Date();
+  const due = new Date(dueDate + "T" + (dueTime || "12:00"));
+  const diffTime = due.getTime() - now.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays < 0) return { status: "overdue" as const, days: Math.abs(diffDays) };
+  if (diffDays === 0) return { status: "dueToday" as const, days: 0 };
+  return { status: "dueSoon" as const, days: diffDays };
+}
+
+const getBottomText = (status: string, days: number) => {
   if (status === "overdue") return `Was due ${days} day${days > 1 ? "s" : ""} ago`;
   if (status === "dueSoon") return `Will be due in ${days} day${days > 1 ? "s" : ""}`;
   return "Due today";
 };
 
-const UpcomingReminders = () => {
+type UpcomingRemindersProps = {
+  reminders: Reminder[];
+};
+
+const UpcomingReminders = ({ reminders }: UpcomingRemindersProps) => {
   const router = useRouter();
+  const displayReminders = reminders.slice(0, 3);
+
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>Reminders Due Soon</Text>
         <TouchableOpacity onPress={() => router.push('/reminders')} activeOpacity={0.7}>
@@ -97,7 +75,6 @@ const UpcomingReminders = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Scroll Cards */}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -105,8 +82,10 @@ const UpcomingReminders = () => {
         snapToInterval={CARD_WIDTH + CARD_SPACING}
         decelerationRate="fast"
       >
-        {reminders.map((item) => {
-          const status = statusStyles[item.status];
+        {displayReminders.map((item) => {
+          const { status, days } = getReminderStatus(item.dueDate, item.dueTime);
+          const s = statusStyles[status];
+          const iconName = categoryIconMap[item.category] || "notifications-outline";
 
           return (
             <View
@@ -114,40 +93,26 @@ const UpcomingReminders = () => {
               style={[
                 styles.card,
                 {
-                  borderColor: status.color,
-                  backgroundColor: status.faintBg,
+                  borderColor: s.color,
+                  backgroundColor: s.faintBg,
                 },
               ]}
             >
-              {/* Top Row */}
               <View style={styles.cardHeader}>
-                <View
-                  style={[
-                    styles.statusBadge,
-                    { backgroundColor: status.color },
-                  ]}
-                >
-                  <Text style={styles.statusText}>{status.label}</Text>
+                <View style={[styles.statusBadge, { backgroundColor: s.color }]}>
+                  <Text style={styles.statusText}>{s.label}</Text>
                 </View>
 
                 <View style={styles.iconWrapper}>
-                  <Ionicons
-                    name={reminderTypeIcons[item.iconType].name}
-                    size={22}
-                    color={status.color}
-                  />
+                  <Ionicons name={iconName as any} size={22} color={s.color} />
                 </View>
               </View>
 
-              {/* Type */}
-              <Text style={styles.reminderType}>{item.type}</Text>
+              <Text style={styles.reminderType}>{item.category}</Text>
+              <Text style={styles.description}>{item.title}</Text>
 
-              {/* Description */}
-              <Text style={styles.description}>{item.description}</Text>
-
-              {/* Bottom Text */}
-              <Text style={[styles.bottomText, { color: status.color }]}>
-                {getBottomText(item.status, item.days)}
+              <Text style={[styles.bottomText, { color: s.color }]}>
+                {getBottomText(status, days)}
               </Text>
             </View>
           );

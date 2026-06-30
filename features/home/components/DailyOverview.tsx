@@ -7,28 +7,19 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import Svg, { Circle } from 'react-native-svg';
+import type { Task } from '@/features/tasks/types';
 
 const ACCENT = '#F48C25';
 
-const tasks = [
-  { id: 1, label: 'Morning workout', done: true },
-  { id: 2, label: 'Review project plan', done: false },
-  { id: 3, label: 'Team standup call', done: false },
-];
-
-const TOTAL_TASKS = 5;
-const COMPLETED_TASKS = 3;
-
-function CircularProgress({ completed, total, size = 90, strokeWidth = 7 }) {
+function CircularProgress({ completed, total, size = 90, strokeWidth = 7 }: { completed: number; total: number; size?: number; strokeWidth?: number }) {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
-  const progress = completed / total;
+  const progress = total > 0 ? completed / total : 0;
   const strokeDashoffset = circumference * (1 - progress);
 
   return (
     <View style={styles.circleWrapper}>
       <Svg width={size} height={size} style={{ transform: [{ rotate: '-90deg' }] }}>
-        {/* Track */}
         <Circle
           cx={size / 2}
           cy={size / 2}
@@ -37,7 +28,6 @@ function CircularProgress({ completed, total, size = 90, strokeWidth = 7 }) {
           strokeWidth={strokeWidth}
           fill="none"
         />
-        {/* Progress */}
         <Circle
           cx={size / 2}
           cy={size / 2}
@@ -50,7 +40,6 @@ function CircularProgress({ completed, total, size = 90, strokeWidth = 7 }) {
           strokeLinecap="round"
         />
       </Svg>
-      {/* Center label */}
       <View style={styles.circleLabel}>
         <Text style={styles.circleCount}>{completed}/{total}</Text>
         <Text style={styles.circleSub}>tasks</Text>
@@ -59,7 +48,7 @@ function CircularProgress({ completed, total, size = 90, strokeWidth = 7 }) {
   );
 }
 
-function Checkbox({ done, label }) {
+function Checkbox({ done, label }: { done: boolean; label: string }) {
   return (
     <View style={styles.checkRow}>
       <View style={[styles.checkbox, done && styles.checkboxDone]}>
@@ -70,28 +59,31 @@ function Checkbox({ done, label }) {
   );
 }
 
-export default function DailyOverview() {
+type DailyOverviewProps = {
+  tasks: Task[];
+};
+
+export default function DailyOverview({ tasks }: DailyOverviewProps) {
   const router = useRouter();
+  const displayTasks = tasks.slice(0, 5);
+  const totalTasks = tasks.length;
+  const completedTasks = tasks.filter(t => t.completed).length;
+
   return (
     <View style={styles.card}>
-      {/* Header */}
       <Text style={styles.header}>Today's Overview</Text>
 
-      {/* Two-column row */}
       <View style={styles.row}>
-        {/* Task list */}
         <View style={styles.taskList}>
-          {tasks.map(task => (
-            <Checkbox key={task.id} done={task.done} label={task.label} />
+          {displayTasks.map(task => (
+            <Checkbox key={task.id} done={task.completed} label={task.title} />
           ))}
         </View>
 
-        {/* Circular progress */}
-        <CircularProgress completed={COMPLETED_TASKS} total={TOTAL_TASKS} />
+        <CircularProgress completed={completedTasks} total={totalTasks} />
       </View>
 
-      {/* View All Button */}
-      <TouchableOpacity style={styles.button} activeOpacity={0.8} onPress={() => router.push('/reminders')}>
+      <TouchableOpacity style={styles.button} activeOpacity={0.8} onPress={() => router.push('/tasks')}>
         <Text style={styles.buttonText}>View All Tasks</Text>
       </TouchableOpacity>
     </View>
