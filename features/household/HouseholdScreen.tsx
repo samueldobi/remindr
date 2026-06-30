@@ -26,7 +26,7 @@ type FormMode = 'task' | 'shopping' | 'bill' | null;
 export default function HouseholdScreen() {
   const { tasks, addTask, markDone, deleteTask, loadTasks } = useHouseholdTasks();
   const { lists, addList, toggleItem, deleteList, addListItem, renameListItem, deleteListItem, loadLists } = useShoppingLists();
-  const { bills, addBill, togglePaid, loadBills } = useBills();
+  const { bills, addBill, togglePaid, deleteBill, loadBills } = useBills();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('Tasks');
@@ -114,7 +114,7 @@ export default function HouseholdScreen() {
     }
 
     if (activeTab === 'Bills') {
-      return <Bills bills={bills} onToggle={togglePaid} />;
+      return <Bills bills={bills} onToggle={togglePaid} onDeleteBill={deleteBill} />;
     }
 
     return null;

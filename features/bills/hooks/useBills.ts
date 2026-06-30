@@ -60,5 +60,10 @@ export function useBills() {
     await persist(updated);
   }, [bills]);
 
-  return { bills, loading, addBill, togglePaid, loadBills };
+  const deleteBill = useCallback(async (id: string) => {
+    const updated = bills.filter(b => b.id !== id);
+    await persist(updated);
+  }, [bills]);
+
+  return { bills, loading, addBill, togglePaid, deleteBill, loadBills };
 }
