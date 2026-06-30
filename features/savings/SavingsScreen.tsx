@@ -10,7 +10,7 @@ export default function SavingsScreen() {
 
   return (
     <>
-      <SafeAreaView style={styles.safe}>
+      <SafeAreaView edges={['top']} style={styles.safe}>
         <View style={styles.container}>
           <AppHeader title="Savings" onMenuPress={() => setDrawerOpen(true)} />
           <JointSavings />

@@ -125,7 +125,7 @@ export default function HouseholdScreen() {
 
   return (
     <>
-      <SafeAreaView style={styles.safe}>
+      <SafeAreaView edges={['top']} style={styles.safe}>
         <View style={styles.container}>
           <AppHeader title="Household Board" onMenuPress={() => setDrawerOpen(true)} />
 

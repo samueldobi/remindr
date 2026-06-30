@@ -131,6 +131,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     padding: 14,
     gap: 12,
+    marginBottom: 12,
     borderWidth: 1,
     borderColor: 'rgba(244,140,37,0.06)',
   },
@@ -210,6 +211,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 4,
+    
   },
   deleteBtnText: {
     color: '#FFF',

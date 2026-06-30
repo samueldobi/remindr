@@ -52,7 +52,7 @@ export default function SettingsScreen() {
 
   return (
     <>
-      <SafeAreaView style={styles.safe}>
+      <SafeAreaView edges={['top']} style={styles.safe}>
         <View style={styles.container}>
           <AppHeader title="Settings" onMenuPress={() => setDrawerOpen(true)} />
 

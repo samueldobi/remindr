@@ -21,7 +21,7 @@ export default function RemindersScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.safe}>
+      <SafeAreaView edges={['top']} style={styles.safe}>
         <View style={styles.center}>
           <ActivityIndicator size="large" color="#F48C25" />
         </View>
@@ -31,7 +31,7 @@ export default function RemindersScreen() {
 
   return (
     <>
-      <SafeAreaView style={styles.safe}>
+      <SafeAreaView edges={['top']} style={styles.safe}>
         <View style={styles.container}>
           <AppHeader title="Reminders" onMenuPress={() => setDrawerOpen(true)} />
 

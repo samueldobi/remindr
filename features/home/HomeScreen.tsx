@@ -1,4 +1,4 @@
-import { View, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, ScrollView, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import DailyOverview from './components/DailyOverview';
 import UpcomingReminders from './components/UpcomingReminders';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -13,9 +13,9 @@ export default function HomeScreenTab() {
 
   return (
     <>
-      <SafeAreaView style={{ flex: 1, marginBottom: 0, backgroundColor: '#F8F7F5' }}>
+      <SafeAreaView edges={['top']} style={{ flex: 1, marginBottom: 0, backgroundColor: '#F8F7F5' }}>
         <AppHeader title="Remindr" onMenuPress={() => setDrawerOpen(true)} showAvatar={false} />
-        <View style={styles.container}>
+        <ScrollView style={{ flex: 1, backgroundColor: '#F8F7F5', padding: 10 }} contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-start' }}>
           <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View>
               <View style={styles.headerView}>
@@ -34,7 +34,7 @@ export default function HomeScreenTab() {
               Ongoing Reminders
             </Text>
           </View>
-        </View>
+        </ScrollView>
       </SafeAreaView>
 
       <AppDrawer visible={drawerOpen} onClose={() => setDrawerOpen(false)} />
